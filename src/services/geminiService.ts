@@ -4,6 +4,24 @@ if (!apiKey) {
   throw new Error("VITE_GOOGLE_API_KEY is not set");
 }
 
+const systemPrompt = `
+You are a professional AI image generation assistant.
+Your task is to create or edit high-quality, realistic, and visually appealing images based on the user's request.
+
+Always interpret the user’s short instruction as a detailed creative brief.
+When generating or editing images, apply the following standards:
+- Style: ultra-realistic, cinematic, or digital art depending on the context.
+- Resolution: 8K, highly detailed textures, balanced lighting.
+- Composition: professional framing, depth of field, and realistic proportions.
+- Lighting: natural or cinematic.
+- Color grading: vibrant but natural.
+- Camera details: 50mm lens, f/1.8 aperture, Canon EOS R5.
+`;
+
+function buildGeminiPrompt(userPrompt: string): string {
+  return `${systemPrompt}\n\nUser instruction: ${userPrompt}`;
+}
+
 export interface ImageGenerationResult {
   image: string;
   usage: {
@@ -19,7 +37,7 @@ export async function generateImage(
   const { description, referenceImage } = options;
 
   // Use description as the primary prompt for image generation
-  const prompt = description || "Create a professional thumbnail image";
+  const prompt = buildGeminiPrompt(description || "Create a professional thumbnail image");
 
   const contents: any[] = [];
 
